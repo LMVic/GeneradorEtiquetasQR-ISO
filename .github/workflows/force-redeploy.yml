@@ -1,4 +1,4 @@
-name: Force redeploy
+name: Force redeploy (debug)
 
 on:
   workflow_dispatch:
@@ -21,9 +21,34 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
-      - name: Force empty commit and push
+      - name: Show git + environment debug info
+        run: |
+          echo "### GITHUB REPOSITORY: $GITHUB_REPOSITORY"
+          echo "### GITHUB REF: $GITHUB_REF"
+          git remote -v || true
+          git branch --show-current || true
+          git status --porcelain || true
+          ls -la
+
+      - name: Configure push auth (use REPO_PAT if provided)
+        run: |
+          if [ -n "${{ secrets.REPO_PAT }}" ]; then
+            echo "Using REPO_PAT for push"
+            git remote set-url origin https://x-access-token:${{ secrets.REPO_PAT }}@github.com/${{ github.repository }}.git
+          else
+            echo "No REPO_PAT set; using GITHUB_TOKEN"
+          fi
+
+      - name: Force empty commit and push (capture output)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "force redeploy: $(date -u)"
-          git push origin "HEAD:${{ github.event.inputs.branch }}"
+          git commit --allow-empty -m "force redeploy: $(date -u)" || echo "no changes to commit (empty commit created)"
+          set -o pipefail
+          git push origin "HEAD:${{ github.event.inputs.branch }}" 2>&1 | tee push.log || (cat push.log && exit 1)
+          echo "Push finished — show last lines of push.log"
+          tail -n 200 push.log || true
+
+      - name: Show remote refs (verify HEAD on remote)
+        run: |
+          git ls-remote origin refs/heads/${{ github.event.inputs.branch }} || true
