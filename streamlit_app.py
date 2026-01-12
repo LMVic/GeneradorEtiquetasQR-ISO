@@ -33,10 +33,13 @@ if uploaded_file:
         text_height = 10
 
         zone_colors = {
-            "PAS": "white", "ISL": "white", "POD": "#A7C7E7",
-            "CDE": "#7EA7D7", "CTR": "#7EA7D7", "XSL": "#90EE90",
-            "CAJ": "#90EE90", "EXP": "#FFA07A", "IMP": "#90EE90", "ALT": "#FFA07A",
-            "10": "#FFFF14",  "20": "#FFA500",  "30": "#A7C7E7",  "40": "#90EE90",  "50": "#FF00FF",  "PC": "white",
+            "PAS": "white", "ISL": "white", 
+            "POD": "#7BC8F6","CDE": "#7BC8F6", "CTR": "#7BC8F6",
+            "XSL": "#90EE90","CAJ": "#90EE90", "IMP": "#90EE90", 
+            "ALT": "#FFA07A",
+            "EXP": "#C5C9C7",
+            ## Logistica Resreva
+            "10": "#FFFF14",  "20": "#FFA500",  "30": "#7BC8F6",  "40": "#90EE90",  "50": "#DDA0DD",  "PC": "white",
         }
 
         def generate_a4_labels(labels, zones, cols, rows, page_size):
